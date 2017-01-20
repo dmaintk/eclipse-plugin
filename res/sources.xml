@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<sources>
+	<source>
+		<connectorClass>GitHubConnector</connectorClass>
+		<user>dmaintk</user>
+		<repository>eclipse-plugin</repository>
+	</source>
+<!-- 	<source> -->
+<!-- 		<connectorClass>GitHubConnector</connectorClass> -->
+<!-- 		<user>nem0</user> -->
+<!-- 		<repository>LumixEngine</repository> -->
+<!-- 	</source> -->
+	<source>
+		<connectorClass>DataBaseConnector</connectorClass>
+		<dbUrl>localhost/avantrip</dbUrl>
+		<user>root</user>
+		<pass>root</pass>
+	</source>
+</sources>

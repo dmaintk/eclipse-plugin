@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: IssuesList
+Bundle-SymbolicName: IssuesList;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: issueslist.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: lib/org.eclipse.egit.github.core-2.1.5.jar,
+ lib/gson-2.2.4.jar,
+ lib/mysql-connector-java-5.1.38.jar,
+ .

@@ -1,1 +1,1 @@
-# eclipse-plugin
+# Eclipse plugin: Issues List
