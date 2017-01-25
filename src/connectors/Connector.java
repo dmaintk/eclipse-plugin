@@ -1,10 +1,12 @@
 package connectors;
 
-import java.util.List;
+import java.util.Collection;
+
+import issueslist.model.Issue;
 
 public interface Connector {
 
-	public List<Issue> getIssuesList();
+	public Collection<Issue> getIssuesList();
 	
 	public void dispose();
 	

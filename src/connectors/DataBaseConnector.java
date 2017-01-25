@@ -6,16 +6,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
-import sources.IssuesSourceXml;
+import issueslist.model.Issue;
+import issueslist.model.IssueSource;
 
 public class DataBaseConnector implements Connector {
 
+	private String sourceId;
 	private Connection dbConn = null;
 
-	public DataBaseConnector(IssuesSourceXml source) {
-		this(source.getField("dbUrl"), source.getField("user"), source.getField("pass"));
+	public DataBaseConnector(IssueSource source) {
+		this(source.getFields().get("dbUrl"), 
+			source.getFields().get("user"), 
+			source.getFields().get("pass"));
+		sourceId = source.getId();
 	}
 	
 	public DataBaseConnector(String dbUrl, String user, String pass) {
@@ -34,8 +39,8 @@ public class DataBaseConnector implements Connector {
 	}
 	
 	@Override
-	public List<Issue> getIssuesList() {
-		List<Issue> issues = new ArrayList<Issue>();
+	public Collection<Issue> getIssuesList() {
+		Collection<Issue> issues = new ArrayList<Issue>();
 		
 		try {
 			Statement stmt = dbConn.createStatement();
@@ -45,7 +50,7 @@ public class DataBaseConnector implements Connector {
 			while(rs.next()) {
 				Issue issue = new Issue();
 
-				issue.setSource("Database");
+				issue.setSource(sourceId);
 				issue.setTitle(rs.getString("title"));
 				issue.setDescription(rs.getString("description"));
 				issue.setCreatorName(rs.getString("creator"));

@@ -3,7 +3,7 @@ package issueslist.views;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 
-import connectors.Issue;
+import issueslist.model.Issue;
 
 import org.eclipse.jface.viewers.*;
 
@@ -20,7 +20,11 @@ public class IssuesView extends ViewPart {
 	public static final String ID = "issueslist.views.IssuesView";
 
 	private TableViewer viewer;
-	private Action refresh;
+	private IssueSourceCrudDialog dialog;
+	private ViewContentProvider contentProvider;
+	private Action refreshList;
+	private Action openIssuesSourceCrudDialog;
+
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -28,11 +32,15 @@ public class IssuesView extends ViewPart {
 		viewer.getTable().setHeaderVisible(true);
 		viewer.getTable().setLinesVisible(true);
 		
-		viewer.setContentProvider(new ViewContentProvider());
 		createColumns();
-		viewer.setInput(getViewSite());  // esto llama a getElements()
-		getSite().setSelectionProvider(viewer);
 		
+		contentProvider = new ViewContentProvider(); 
+		viewer.setContentProvider(contentProvider);
+		viewer.setInput(getViewSite());  // esto llama a getElements()
+
+		getSite().setSelectionProvider(viewer);
+		dialog = new IssueSourceCrudDialog(viewer.getControl().getShell());
+
 		initActions();
 		initActionBars();
 	}
@@ -43,8 +51,8 @@ public class IssuesView extends ViewPart {
 	}
 	
 	private void createColumns() {
-        String[] titles = { "Title", "Description", "User", "Created on" };
-        int[] sizes = { 200, 200, 100, 180 };
+        String[] titles = { "Title", "Description", "User", "Created On", "Source Id" };
+        int[] sizes = { 220, 240, 100, 180, 100 };
 
 		TableViewerColumn colTitle = createTableViewerColumn(titles[0], sizes[0]);
 		colTitle.setLabelProvider(new ColumnLabelProvider() {
@@ -78,6 +86,14 @@ public class IssuesView extends ViewPart {
                 return format.format(((Issue) element).getCreationDate());
 	        }
 		});
+		
+		TableViewerColumn colSource = createTableViewerColumn(titles[4], sizes[4]);
+		colSource.setLabelProvider(new ColumnLabelProvider() {
+	        @Override
+	        public String getText(Object element) {
+                return ((Issue) element).getSource();
+	        }
+		});
 	}
 	
 	private TableViewerColumn createTableViewerColumn(String title, int width) {
@@ -88,29 +104,41 @@ public class IssuesView extends ViewPart {
 	}
 	
 	private void initActions() {
-		refresh = new Action() {
+		refreshList = new Action() {
 			@Override
 			public void run() {
+				String msg = "Do you wish to also rescan config file?";
+				if(showQuestion(msg)) {
+					contentProvider.rescanFile();
+				}
 				viewer.refresh();  // esto tambien llama a getElements()
-				showMessage("Refresh executed");
 			}
 		};
 
-		refresh.setToolTipText("Refresh list");
-		refresh.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+		refreshList.setToolTipText("Refresh list");
+		refreshList.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
 			getImageDescriptor(ISharedImages.IMG_OBJ_ELEMENT));
+		
+		openIssuesSourceCrudDialog = new Action() {
+			@Override
+			public void run() {
+				dialog.open();
+			}
+		};
+		
+		openIssuesSourceCrudDialog.setToolTipText("Configure sources");
+		openIssuesSourceCrudDialog.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+			getImageDescriptor(ISharedImages.IMG_ETOOL_DEF_PERSPECTIVE));
 	}
 	
-	private void showMessage(String message) {
-		MessageDialog.openInformation(
-			viewer.getControl().getShell(),
-			"Issues View",
-			message);
+	private Boolean showQuestion(String message) {
+		return MessageDialog.openQuestion(viewer.getControl().getShell(), "Issues List", message);
 	}
 
 	private void initActionBars() {
 		IActionBars bars = getViewSite().getActionBars();
-		bars.getToolBarManager().add(refresh);
+		bars.getToolBarManager().add(openIssuesSourceCrudDialog);
+		bars.getToolBarManager().add(refreshList);
 	}
 	
 }

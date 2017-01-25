@@ -3,21 +3,23 @@ package connectors;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.eclipse.egit.github.core.Issue;
 import org.eclipse.egit.github.core.service.IssueService;
 
-import sources.IssuesSourceXml;
+import issueslist.model.IssueSource;
 
 public class GitHubConnector implements Connector {
 
+	private String sourceId;
 	private IssueService service;
 	private String user;
 	private String repository;
 	
-	public GitHubConnector(IssuesSourceXml source) {
-		this(source.getField("user"), source.getField("repository"));
+	public GitHubConnector(IssueSource source) {
+		this(source.getFields().get("user"), 
+			source.getFields().get("repository"));
+		sourceId = source.getId();
 	}
 	
 	public GitHubConnector(String user, String repository) {
@@ -28,22 +30,22 @@ public class GitHubConnector implements Connector {
 	
 	public static void main(String[] args) {
 		GitHubConnector con = new GitHubConnector("dmaintk", "eclipse-plugin");
-		for(connectors.Issue i : con.getIssuesList()) {
+		for(issueslist.model.Issue i : con.getIssuesList()) {
 			System.out.println(i.getTitle());
 		}
 	}
 
 	@Override
-	public List<connectors.Issue> getIssuesList() {
-		List<connectors.Issue> issues = new ArrayList<connectors.Issue>();
+	public Collection<issueslist.model.Issue> getIssuesList() {
+		Collection<issueslist.model.Issue> issues = new ArrayList<issueslist.model.Issue>();
 		
 		try {
 			Collection<Issue> repoIssues = service.getIssues(user, repository, null);
 		
 			for(Issue repoIssue : repoIssues) {
-				connectors.Issue issue = new connectors.Issue();
+				issueslist.model.Issue issue = new issueslist.model.Issue();
 
-				issue.setSource("Github");
+				issue.setSource(sourceId);
 				issue.setTitle(repoIssue.getTitle());
 				issue.setDescription(repoIssue.getBody());
 				issue.setCreatorName(repoIssue.getUser().getLogin());

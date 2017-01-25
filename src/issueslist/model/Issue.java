@@ -1,4 +1,4 @@
-package connectors;
+package issueslist.model;
 
 import java.util.Date;
 

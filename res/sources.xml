@@ -1,19 +1,16 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <sources>
-	<source>
-		<connectorClass>GitHubConnector</connectorClass>
-		<user>dmaintk</user>
-		<repository>eclipse-plugin</repository>
-	</source>
-<!-- 	<source> -->
-<!-- 		<connectorClass>GitHubConnector</connectorClass> -->
-<!-- 		<user>nem0</user> -->
-<!-- 		<repository>LumixEngine</repository> -->
-<!-- 	</source> -->
-	<source>
-		<connectorClass>DataBaseConnector</connectorClass>
-		<dbUrl>localhost/avantrip</dbUrl>
-		<user>root</user>
-		<pass>root</pass>
-	</source>
+    <source connector="GitHubConnector" enabled="true" id="github1">
+        <user>dmaintk</user>
+        <repository>eclipse-plugin</repository>
+    </source>
+    <source connector="GitHubConnector" enabled="false" id="github2">
+        <user>nem0</user>
+        <repository>LumixEngine</repository>
+    </source>
+    <source connector="DataBaseConnector" enabled="true" id="mysql">
+        <dbUrl>localhost/avantrip</dbUrl>
+        <user>root</user>
+        <pass>root</pass>
+    </source>
 </sources>

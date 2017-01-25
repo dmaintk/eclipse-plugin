@@ -2,33 +2,36 @@ package connectors;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
-import sources.IssuesSourceXml;
-import sources.IssuesSourceFileReader;
+import issueslist.model.Issue;
+import issueslist.model.IssueSource;
+import sources.IssueSourceXmlIO;
 
 public class ConnectorList implements Connector {
 
-	private List<Connector> connectors;
+	private Collection<Connector> connectors;
 	
 	public ConnectorList(String xmlFile) {
 		connectors = new ArrayList<Connector>();
 		
-		IssuesSourceFileReader sourcesReader = new IssuesSourceFileReader(xmlFile);
-		for(IssuesSourceXml source : sourcesReader.getSourceList()) {
-			try {
-				Class<?> exceptionClazz = Class.forName("connectors."+source.getField("connectorClass"));
-				Constructor<?> constructor = exceptionClazz.getConstructor(IssuesSourceXml.class);
-				connectors.add((Connector) constructor.newInstance(source));
-			} catch(Exception e) {
-				e.printStackTrace();
+		IssueSourceXmlIO sourcesIO = new IssueSourceXmlIO(xmlFile);
+		for(IssueSource source : sourcesIO.readSourceList()) {
+			if(source.isEnabled()) {
+				try {
+					Class<?> connectorClazz = Class.forName("connectors."+source.getConnectorClass());
+					Constructor<?> constructor = connectorClazz.getConstructor(IssueSource.class);
+					connectors.add((Connector) constructor.newInstance(source));
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
 	@Override
-	public List<Issue> getIssuesList() {
-		List<Issue> issues = new ArrayList<Issue>();
+	public Collection<Issue> getIssuesList() {
+		Collection<Issue> issues = new ArrayList<Issue>();
 		
 		for(Connector connector : connectors) {
 			issues.addAll(connector.getIssuesList());
