@@ -47,8 +47,8 @@ public class IssueSourceCrudDialog extends Dialog {
 	
 	private IssueSource currSource;
 	
-	public IssueSourceCrudDialog(Shell parentShell) {
-		super(parentShell);
+	public IssueSourceCrudDialog(Composite parent) {
+		super(parent.getShell());
 	}
 
 	@Override

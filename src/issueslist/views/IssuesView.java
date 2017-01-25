@@ -21,25 +21,24 @@ public class IssuesView extends ViewPart {
 
 	private TableViewer viewer;
 	private IssueSourceCrudDialog dialog;
-	private ViewContentProvider contentProvider;
+	private IssuesContentProvider contentProvider;
 	private Action refreshList;
 	private Action openIssuesSourceCrudDialog;
 
 
 	@Override
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		dialog = new IssueSourceCrudDialog(parent);
+		
+		viewer = new TableViewer(parent, SWT.VIRTUAL | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.getTable().setHeaderVisible(true);
 		viewer.getTable().setLinesVisible(true);
 		
 		createColumns();
-		
-		contentProvider = new ViewContentProvider(); 
-		viewer.setContentProvider(contentProvider);
-		viewer.setInput(getViewSite());  // esto llama a getElements()
-
+	
+		contentProvider = new IssuesContentProvider(viewer);
+				
 		getSite().setSelectionProvider(viewer);
-		dialog = new IssueSourceCrudDialog(viewer.getControl().getShell());
 
 		initActions();
 		initActionBars();
@@ -108,10 +107,9 @@ public class IssuesView extends ViewPart {
 			@Override
 			public void run() {
 				String msg = "Do you wish to also rescan config file?";
-				if(showQuestion(msg)) {
-					contentProvider.rescanFile();
-				}
-				viewer.refresh();  // esto tambien llama a getElements()
+				Boolean decision = showQuestion(msg);
+				contentProvider.scanIssues(decision);
+				viewer.refresh();
 			}
 		};
 
